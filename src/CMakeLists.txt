@@ -18,7 +18,6 @@ add_library(LIB lib.hpp lib.cpp)
 add_executable(BASE main.cpp)
 target_link_libraries(BASE LIB)
 
-
 enable_testing()
 add_executable(
   tests
@@ -32,4 +31,3 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(tests)
-
