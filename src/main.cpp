@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -60,11 +61,6 @@ int say_hello(int i) {
   return i + i;
 }
 
-// template<typename T, typename Unused = typename std::enable_if<std::is_base_of<PrintableD, T>::value>::type>
-// void printSomething(T* c) {
-//   c->print_dynamic();
-// }
-
 template<Printable T>
 void printSomething(T& c) {
   c.print_static();
@@ -77,53 +73,22 @@ void print_vector(std::vector<T> vec) {
   }
 }
 
+template <typename Iter>
+void qsort(Iter begin, Iter end) {
+  if (end - begin <= 1) return;
 
-#include <algorithm>
+  auto pivot = end - 1;
+  auto compare = [pivot](const auto& a) { return a < *pivot;};
+  auto mid = std::partition(begin, end, compare);
+  std::swap(*mid, *pivot);
 
-template <typename Iterator>
-void quicksort_aux(Iterator begin, Iterator end) {
-  if (begin == end) {
-   return;
-  }
-  auto lower = [&end] (const auto& a) { return a < *end;};
-  auto higher = [&end] (const auto& a) { return a > *end;};
-
-  auto new_end = std::partition(begin, end, lower);
-  auto new_begin = std::partition(new_end, end, higher);
-
-  quicksort_aux(begin, new_end);
-  quicksort_aux(new_begin, end);
+  qsort(begin, mid);
+  qsort(mid + 1, end);
 }
 
 int main(int argc, char **argv) {
-
-  SmallDog first_small_dog;
-  printSomething(first_small_dog);
-
-  SmallCat first_small_cat;
-  printSomething(first_small_cat);
-
-  auto first_cat = std::make_unique<Cat>();
-  auto first_dog = std::make_unique<Dog>();
-
-  std::vector<std::unique_ptr<AbstractPrintableT>> stat_arr = {};
-  stat_arr.push_back(std::move(first_dog));
-  stat_arr.push_back(std::move(first_cat));
-
-  for (auto &elem : stat_arr) {
-    elem->print_static();
-  }
-
-  auto second_dog = std::make_unique<Dog>();
-  std::vector<std::unique_ptr<PrintableD>> dyn_arr = {};
-
-  dyn_arr.push_back(std::move(second_dog));
-
-  for (auto &elem : dyn_arr) {
-    elem->print_dynamic();
-  }
-
   std::vector<int> test_array = {1,5,2,4,5,3};
-  quicksort_aux(test_array.begin(), test_array.end());
+  qsort(test_array.begin(), test_array.end());
   print_vector(test_array);
+  std::sort(test_array.begin(), test_array.end());
 }
